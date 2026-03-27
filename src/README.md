@@ -6,6 +6,8 @@ A super simple FastAPI application that allows students to view and sign up for 
 
 - View all available extracurricular activities
 - Sign up for activities
+- Unregister students from activities
+- Persistent SQLite storage for activities, participants, and enrollments
 
 ## Getting Started
 
@@ -21,6 +23,8 @@ A super simple FastAPI application that allows students to view and sign up for 
    python app.py
    ```
 
+   On first run, the app automatically creates `src/data/school.db` and seeds it from `src/data/seed_activities.json`.
+
 3. Open your browser and go to:
    - API documentation: http://localhost:8000/docs
    - Alternative documentation: http://localhost:8000/redoc
@@ -34,17 +38,22 @@ A super simple FastAPI application that allows students to view and sign up for 
 
 ## Data Model
 
-The application uses a simple data model with meaningful identifiers:
+The application uses a SQLite-backed data model with explicit entities:
 
-1. **Activities** - Uses activity name as identifier:
+1. **Activities**
 
    - Description
    - Schedule
    - Maximum number of participants allowed
-   - List of student emails who are signed up
+2. **Participants**
 
-2. **Students** - Uses email as identifier:
-   - Name
-   - Grade level
+   - Student email
 
-All data is stored in memory, which means data will be reset when the server restarts.
+3. **Enrollments**
+
+   - Many-to-many relation between activities and participants
+   - Enrollment timestamp
+
+The `/activities` API shape remains unchanged and still returns a dictionary keyed by activity name, including each activity's participant email list.
+
+Data persists between restarts in `src/data/school.db`.
